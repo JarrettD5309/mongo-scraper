@@ -6,6 +6,7 @@ var cheerio = require("cheerio");
 
 // Require all models
 var db = require("./models");
+const { json } = require("express");
 
 var PORT = 3000;
 
@@ -35,9 +36,6 @@ app.get("/scrape", function (req, res) {
         // '$' becomes a shorthand for cheerio's selector commands, much like jQuery's '$'
         var $ = cheerio.load(response.data);
 
-        // An empty array to save the data that we'll scrape
-        // var results = [];
-
         // With cheerio, find each h3 tag
         $("h3").each(function (i, element) {
             var result = {};
@@ -56,7 +54,7 @@ app.get("/scrape", function (req, res) {
         });
 
         res.send("Scrape Complete");
-    });
+    })
 });
 
 // Start the server
