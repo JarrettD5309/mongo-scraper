@@ -33,7 +33,20 @@ $(document).on("click", ".comment-btn", function (event) {
     $("#comment-footer").append(newAddCommentBtn);
     var newCloseBtn = $("<button>").attr("type", "button").addClass("btn btn-secondary").attr("data-dismiss","modal").text("Close");
     $("#comment-footer").append(newCloseBtn);
-    $("#commentModal").modal();
+
+    $.ajax({
+        method: "GET",
+        url: "/api/" + articleID
+    }).then(function(response) {
+        console.log(response);
+        $("#comment-list").empty();
+        for (var i = 0; i<response.length;i++) {
+            var newDisplayComment = $("<li>").test(response[i].comment);
+            $("#comment-list").append(newDisplayComment);
+        }
+        $("#commentModal").modal();
+    });    
+    
 });
 
 $(document).on("click", ".add-comment-btn", function() {

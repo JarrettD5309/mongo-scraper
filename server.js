@@ -44,11 +44,21 @@ app.get("/api", function (req, res) {
         });
 });
 
+app.get("/api/:id", function(req,res) {
+    db.Article.findOne({_id:req.params.id})
+    .populate("note")
+    .then(function(response) {
+        console.log("this is the response: " + JSON.stringify(response));
+        res.json(response);
+    })
+    .catch(function(err) {
+        res.json(err);
+    });
+});
+
 app.post("/api/:id", function (req, res) {
-    console.log("this is the note" + JSON.stringify(req.body));
     db.Note.create(req.body)
         .then(function (dbNote) {
-            console.log("This is returned create of note: " + dbNote);
             return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
         })
         .then(function (dbArticle) {
