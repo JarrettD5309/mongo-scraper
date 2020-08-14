@@ -3,10 +3,10 @@ console.log("YUP");
 $.ajax({
     type: "GET",
     url: "/api",
-}).then(function(res) {
+}).then(function (res) {
     console.log(res);
 
-    for (var i=0;i<res.length;i++) {
+    for (var i = 0; i < res.length; i++) {
         var newCol = $("<div>").addClass("col-lg-6 my-2");
         var newCard = $("<div>").addClass("card h-100");
         var newCardBody = $("<div>").addClass("card-body");
@@ -14,7 +14,7 @@ $.ajax({
         newCardBody.append(newTitle);
         newCard.append(newCardBody);
         var newFooter = $("<div>").addClass("card-footer");
-        var newCommentBtn = $("<a>").addClass("btn btn-primary comment-btn").attr("data-title",res[i].title).attr("role","button").text("Comments");
+        var newCommentBtn = $("<a>").addClass("btn btn-primary comment-btn").attr("data-title", res[i].title).attr("data-id", res[i]._id).attr("role", "button").text("Comments");
         newFooter.append(newCommentBtn);
         var newLink = $("<a>").addClass("card-text").attr("href", res[i].link).text("Link to Article");
         newFooter.append(newLink);
@@ -24,10 +24,31 @@ $.ajax({
     }
 });
 
-$(document).on("click",".comment-btn", function(event) {
+$(document).on("click", ".comment-btn", function (event) {
     $("#comment-title").empty();
     $("#comment-title").append($(this).attr("data-title"));
-    var thisThing = $(this).attr("data-title");
-    console.log("this: " + thisThing);
-    $("#commentModal").modal()
+    var articleID = $(this).attr("data-id");
+    $("#comment-footer").empty();
+    var newAddCommentBtn = $("<button>").attr("type", "button").addClass("btn btn-primary add-comment-btn").attr("data-article-id", articleID).text("Add Comment");
+    $("#comment-footer").append(newAddCommentBtn);
+    var newCloseBtn = $("<button>").attr("type", "button").addClass("btn btn-secondary").attr("data-dismiss","modal").text("Close");
+    $("#comment-footer").append(newCloseBtn);
+    $("#commentModal").modal();
+});
+
+$(document).on("click", ".add-comment-btn", function() {
+    var thisID = $(this).attr("data-article-id");
+    var newComment = $("#add-comment").val();
+    console.log(newComment);
+
+    $.ajax({
+        method: "POST",
+        url: "/api/" + thisID,
+        data: {
+            comment: $("#add-comment").val()
+        }
+    })
+    .then(function(data) {
+        console.log(data);
+    });
 });

@@ -32,16 +32,31 @@ app.get("/", function (req, res) {
     res.sendFile(path.join(__dirname + "./public/index.html"));
 });
 
-app.get("/api", function(req,res) {
+app.get("/api", function (req, res) {
     db.Article.find({})
-    // populate here like example 18
-    .sort({"_id": -1})
-    .then(function(response) {
-        res.json(response)
-        .catch(function(err) {
+        // populate here like example 18
+        .sort({ "_id": -1 })
+        .then(function (response) {
+            res.json(response);
+        })
+        .catch(function (err) {
             res.json(err);
         });
-    });
+});
+
+app.post("/api/:id", function (req, res) {
+    console.log("this is the note" + JSON.stringify(req.body));
+    db.Note.create(req.body)
+        .then(function (dbNote) {
+            console.log("This is returned create of note: " + dbNote);
+            return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
+        })
+        .then(function (dbArticle) {
+            res.json(dbArticle);
+        })
+        .catch(function (err) {
+            res.json(err);
+        });
 });
 
 app.get("/scrape", function (req, res) {
