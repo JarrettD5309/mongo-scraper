@@ -4,7 +4,7 @@ $.ajax({
 }).then(function (res) {
     console.log(res);
 
-    if (res.length===0) {
+    if (res.length === 0) {
         $("#news-items").empty();
         var newHeadCol = $("<div>").addClass("col-12");
         var newHeader = $("<h3>").text("No articles. Please push Scrape button.")
@@ -19,7 +19,7 @@ $.ajax({
             var newTitle = $("<h5>").addClass("card-title").text(res[i].title);
             newCardBody.append(newTitle);
             var longDate = res[i].articledate;
-            var shortDate = longDate.substring(0, longDate.indexOf("T")); 
+            var shortDate = longDate.substring(0, longDate.indexOf("T"));
             var newDate = $("<h6>").addClass("card-subtitle mb-2 text-muted").text("Date: " + shortDate);
             newCardBody.append(newDate);
             newCard.append(newCardBody);
@@ -35,7 +35,7 @@ $.ajax({
 
     }
 
-    
+
 });
 
 $("#scrape-btn").on("click", function () {
@@ -74,7 +74,9 @@ $(document).on("click", ".comment-btn", function (event) {
             $("#comment-directions").empty();
             $("#comment-list").empty();
             for (var i = 0; i < response.length; i++) {
-                var newDisplayComment = $("<li>").text(response[i].comment);
+                var newDisplayComment = $("<li>").attr("id", response[i]._id).addClass("mb-2").text(response[i].comment);
+                var newDeleteCommentBtn = $("<button>").attr("type", "button").addClass("btn btn-danger comment-delete ml-2 py-0 px-2").attr("data-comment-id", response[i]._id).text("X");
+                newDisplayComment.append(newDeleteCommentBtn);
                 $("#comment-list").append(newDisplayComment);
             }
             $("#commentModal").modal();
@@ -104,11 +106,31 @@ $(document).on("click", ".add-comment-btn", function () {
                 $("#no-comments").empty();
                 $("#comment-directions").empty();
                 $("#add-comment").val("");
-                $("#comment-list").append($("<li>").text(data.comment));
+                var newComment = $("<li>").attr("id", data._id).addClass("mb-2").text(data.comment);
+                var newDeleteCommentBtn = $("<button>").attr("type", "button").addClass("btn btn-danger comment-delete ml-2 py-0 px-2").attr("data-comment-id", data._id).text("X");
+                newComment.append(newDeleteCommentBtn);
+                $("#comment-list").append(newComment);
                 console.log(data);
             });
 
     }
 
 
+});
+
+$(document).on("click", ".comment-delete", function () {
+    var commentID = $(this).attr("data-comment-id");
+    $.ajax({
+        method: "DELETE",
+        url: "/api/comment/" + commentID
+    }).then(data => {
+        console.log(data);
+        $("li").remove("#" + data._id);
+
+        if ($(".comment-delete").parents("#comment-list").length === 0) {
+            $("#comment-directions").empty();
+            $("#no-comments").empty();
+            $("#no-comments").append($("<p>").text("No comments yet"));
+        }
+    })
 });
