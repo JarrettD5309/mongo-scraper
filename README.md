@@ -13,6 +13,8 @@ Democracy Now Scraper is a full-stack application that allows users to scrape, d
 * JavaScript
 * Node.js
 * Express
+* MongoDB
+* Mongoose
 * Axios
 * Cheerio 
 * Bootstrap
