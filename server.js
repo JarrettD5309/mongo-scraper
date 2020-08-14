@@ -46,7 +46,7 @@ app.get("/api", function (req, res) {
 
 app.get("/api/:id", function(req,res) {
     console.log("thisis the article: " + req.params.id);
-    db.Note.find({articleid:req.params.id})
+    db.Note.find({articleid: req.params.id})
     .then(function(response) {
         console.log("this is the response: " + JSON.stringify(response));
         res.json(response);
@@ -92,13 +92,14 @@ app.post("/api/:id", function (req, res) {
 });
 
 app.get("/scrape", function (req, res) {
-
+    console.log("scrape is getting called");
     axios.get("https://www.democracynow.org/categories/weekly_column").then(function (response) {
 
         // Load the HTML into cheerio and save it to a variable
         // '$' becomes a shorthand for cheerio's selector commands, much like jQuery's '$'
         var $ = cheerio.load(response.data);
 
+        var promises = [];
         // With cheerio, find each h3 tag
         $("h3").each(function (i, element) {
             var result = {};
@@ -106,18 +107,21 @@ app.get("/scrape", function (req, res) {
             result.title = $(element).text();
 
             result.link = "https://www.democracynow.org" + $(element).children().attr("href");
-
+            promises.push(
             db.Article.create(result)
                 .then(function (dbArticle) {
                     console.log(dbArticle);
                 })
                 .catch(function (err) {
                     console.log(err);
-                });
+                })
+            );
         });
-
-        res.send("Scrape Complete");
-    })
+        Promise.all(promises).then(function() {
+            res.send("Scrape Complete");
+        });
+        
+    });
 });
 
 // Start the server
