@@ -16,7 +16,7 @@ $.ajax({
         var newFooter = $("<div>").addClass("card-footer");
         var newCommentBtn = $("<a>").addClass("btn btn-primary comment-btn").attr("data-title", res[i].title).attr("data-id", res[i]._id).attr("role", "button").text("Comments");
         newFooter.append(newCommentBtn);
-        var newLink = $("<a>").addClass("card-text").attr("href", res[i].link).text("Link to Article");
+        var newLink = $("<a>").addClass("btn btn-secondary ml-1").attr("href", res[i].link).attr("target", "_blank").text("Link to Article");
         newFooter.append(newLink);
         newCard.append(newFooter);
         newCol.append(newCard);
@@ -41,7 +41,7 @@ $(document).on("click", ".comment-btn", function (event) {
         console.log(response);
         $("#comment-list").empty();
         for (var i = 0; i<response.length;i++) {
-            var newDisplayComment = $("<li>").test(response[i].comment);
+            var newDisplayComment = $("<li>").text(response[i].comment);
             $("#comment-list").append(newDisplayComment);
         }
         $("#commentModal").modal();
@@ -52,6 +52,7 @@ $(document).on("click", ".comment-btn", function (event) {
 $(document).on("click", ".add-comment-btn", function() {
     var thisID = $(this).attr("data-article-id");
     var newComment = $("#add-comment").val();
+    
     console.log(newComment);
 
     $.ajax({
@@ -62,6 +63,8 @@ $(document).on("click", ".add-comment-btn", function() {
         }
     })
     .then(function(data) {
+        $("#add-comment").val("");
+        $("#comment-list").append($("<li>").text(data.comment));
         console.log(data);
     });
 });

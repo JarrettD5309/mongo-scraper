@@ -45,8 +45,8 @@ app.get("/api", function (req, res) {
 });
 
 app.get("/api/:id", function(req,res) {
-    db.Article.findOne({_id:req.params.id})
-    .populate("note")
+    console.log("thisis the article: " + req.params.id);
+    db.Note.find({articleid:req.params.id})
     .then(function(response) {
         console.log("this is the response: " + JSON.stringify(response));
         res.json(response);
@@ -54,19 +54,41 @@ app.get("/api/:id", function(req,res) {
     .catch(function(err) {
         res.json(err);
     });
+    // db.Article.findOne({_id:req.params.id})
+    // .populate("note")
+    // .then(function(response) {
+    //     console.log("this is the response: " + JSON.stringify(response));
+    //     res.json(response);
+    // })
+    // .catch(function(err) {
+    //     res.json(err);
+    // });
 });
 
 app.post("/api/:id", function (req, res) {
-    db.Note.create(req.body)
-        .then(function (dbNote) {
-            return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
-        })
+    db.Note.create({
+        comment: req.body.comment,
+        articleid: req.params.id
+    })
+        // .then(function (dbNote) {
+        //     return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
+        // })
         .then(function (dbArticle) {
             res.json(dbArticle);
         })
         .catch(function (err) {
             res.json(err);
         });
+    // db.Note.create(req.body)
+    //     .then(function (dbNote) {
+    //         return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
+    //     })
+    //     .then(function (dbArticle) {
+    //         res.json(dbArticle);
+    //     })
+    //     .catch(function (err) {
+    //         res.json(err);
+    //     });
 });
 
 app.get("/scrape", function (req, res) {
