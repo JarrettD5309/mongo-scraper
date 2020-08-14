@@ -3,12 +3,13 @@ var logger = require("morgan");
 var mongoose = require("mongoose");
 var axios = require("axios");
 var cheerio = require("cheerio");
+require('dotenv').config();
 
 // Require all models
 var db = require("./models");
 const { json } = require("express");
 
-var PORT = 3000;
+var PORT = process.env.PORT || 3000;
 
 // Initialize Express
 var app = express();
@@ -23,8 +24,15 @@ app.use(express.json());
 // Make public a static folder
 app.use(express.static("public"));
 
+const MONGODB_URI = process.env.mongodburi;
+
 // Connect to the Mongo DB
-mongoose.connect("mongodb://localhost/mongoScraper", { useNewUrlParser: true });
+mongoose.connect(MONGODB_URI || "mongodb://localhost/mongoScraper", { useNewUrlParser: true });
+
+mongoose.connection.on("connected", () => console.log("Mongoose is connected")
+);
+
+
 
 // Routes
 
