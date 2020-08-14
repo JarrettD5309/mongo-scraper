@@ -35,7 +35,7 @@ app.get("/", function (req, res) {
 app.get("/api", function (req, res) {
     db.Article.find({})
         // populate here like example 18
-        .sort({ "_id": -1 })
+        .sort({ "articledate": -1 })
         .then(function (response) {
             res.json(response);
         })
@@ -44,16 +44,16 @@ app.get("/api", function (req, res) {
         });
 });
 
-app.get("/api/:id", function(req,res) {
+app.get("/api/:id", function (req, res) {
     console.log("thisis the article: " + req.params.id);
-    db.Note.find({articleid: req.params.id})
-    .then(function(response) {
-        console.log("this is the response: " + JSON.stringify(response));
-        res.json(response);
-    })
-    .catch(function(err) {
-        res.json(err);
-    });
+    db.Note.find({ articleid: req.params.id })
+        .then(function (response) {
+            console.log("this is the response: " + JSON.stringify(response));
+            res.json(response);
+        })
+        .catch(function (err) {
+            res.json(err);
+        });
     // db.Article.findOne({_id:req.params.id})
     // .populate("note")
     // .then(function(response) {
@@ -107,20 +107,77 @@ app.get("/scrape", function (req, res) {
             result.title = $(element).text();
 
             result.link = "https://www.democracynow.org" + $(element).children().attr("href");
+
+            var rawLink = $(element).children().attr("href");
+            var rawLink2 = rawLink.substr(1);
+            var n = 0;
+            var articleDate = "";
+            
+            var articleYear = "";
+            var articleMonth = "";
+            var articleDay = "";
+            for (var i = 0; i < rawLink2.length; i++) {
+                if (n===0) {
+                    if (rawLink2[i]==="/") {
+                        n++;
+                        // return;
+                    } else {
+                        articleYear=articleYear+rawLink2[i];
+                    }
+                } else if (n===1) {
+                    if (rawLink2[i]==="/") {
+                        n++;
+                        if (parseInt(articleMonth)<10) {
+                            articleMonth="0" + articleMonth;
+                        }
+                        // return;
+                    } else {
+                        articleMonth=articleMonth+rawLink2[i];
+                    }
+                } else if (n===2) {
+                    if (rawLink2[i]==="/") {
+                        n++;
+                        if (parseInt(articleDay)<10) {
+                            articleDay="0"+articleDay;
+                        }
+                        // return;
+                    } else {
+                        articleDay=articleDay+rawLink2[i];
+                    }
+                } else if (n===3) {
+                    articleDate=articleYear+"-"+articleMonth+"-"+articleDay;
+                    result.articledate=articleDate;
+                }
+                // if (rawLink2[i] === "/") {
+                //     n++;
+                //     if (n === 3) {
+                //         result.articledate = articleDate;
+                //         console.log("article date: " + articleDate);
+                //         return;
+                //     } else {
+                //         articleDate = articleDate + "-";
+                //     }
+
+
+                // } else {
+                //     articleDate = articleDate + rawLink2[i];
+                // }
+            }
+            console.log("THIS IS THE DATE: " + articleDate);
             promises.push(
-            db.Article.create(result)
-                .then(function (dbArticle) {
-                    console.log(dbArticle);
-                })
-                .catch(function (err) {
-                    console.log(err);
-                })
+                db.Article.create(result)
+                    .then(function (dbArticle) {
+                        console.log(dbArticle);
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                    })
             );
         });
-        Promise.all(promises).then(function() {
+        Promise.all(promises).then(function () {
             res.send("Scrape Complete");
         });
-        
+
     });
 });
 

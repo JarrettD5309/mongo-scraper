@@ -6,7 +6,10 @@ $.ajax({
 
     if (res.length===0) {
         $("#news-items").empty();
-        $("#news-items").append($("<h3>").text("No articles. Please push Scrape button."));
+        var newHeadCol = $("<div>").addClass("col-12");
+        var newHeader = $("<h3>").text("No articles. Please push Scrape button.")
+        newHeadCol.append(newHeader);
+        $("#news-items").append(newHeadCol);
     } else {
         $("#news-items").empty();
         for (var i = 0; i < res.length; i++) {
@@ -15,6 +18,10 @@ $.ajax({
             var newCardBody = $("<div>").addClass("card-body");
             var newTitle = $("<h5>").addClass("card-title").text(res[i].title);
             newCardBody.append(newTitle);
+            var longDate = res[i].articledate;
+            var shortDate = longDate.substring(0, longDate.indexOf("T")); 
+            var newDate = $("<h6>").addClass("card-subtitle mb-2 text-muted").text("Date: " + shortDate);
+            newCardBody.append(newDate);
             newCard.append(newCardBody);
             var newFooter = $("<div>").addClass("card-footer");
             var newCommentBtn = $("<a>").addClass("btn btn-primary comment-btn").attr("data-title", res[i].title).attr("data-id", res[i]._id).attr("role", "button").text("Comments");
