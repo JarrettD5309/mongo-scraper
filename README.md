@@ -28,7 +28,7 @@ Democracy Now Scraper is a full-stack application that allows users to scrape, d
 
 <https://salty-garden-60237.herokuapp.com/>
 
-2. Use to `Scrape` button to check for and add new articles to the database.
+2. Use the `Scrape` button to check for and add new articles to the database.
 
 3. Click the `Comments` button to view, add, and delete comments for that specific article.
 
